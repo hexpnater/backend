@@ -148,6 +148,7 @@ module.exports = {
             const email = req.body.email
             const finduser = await usersModel.findOne({ email: { $eq: req.body.email } });
             if (finduser) {
+                //abc
                 //let random = Math.floor(1000 + Math.random() * 9000);
                 // const transporter = nodemailer.createTransport({
                 //     host: 'smtp.gmail.com',
