@@ -189,6 +189,19 @@ module.exports = {
             console.log(error);
         }
     },
+    deleteuser: async (req, res) => {
+        try {
+            const findByid = await usersModel.findById(req.params.id)
+            if (findByid) {
+                const findByid = await usersModel.deleteOne({ _id: req.params.id })
+                res.send({ status: true, message: "data deleted Successfully" })
+            } else {
+                res.send({ status: false, message: "data can not deleted" })
+            }
+        } catch (error) {
+            res.send({ status: false, message: "Something went wrong!!" })
+        }
+    },
     sendMail: async (req, res) => {
         try {
             const email = req.body.email
