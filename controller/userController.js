@@ -204,39 +204,45 @@ module.exports = {
     },
     sendMail: async (req, res) => {
         try {
-            const email = req.body.email
-            const mailMessage = req.body.message
+            const mailMessage = req.body.mailMessage
             const finduser = await usersModel.findOne({ email: { $eq: req.body.email } });
+            if (finduser && finduser.isverify == false) {
+                res.json({
+                    status: false,
+                    message: "Message cannot be sent Your account must be verified first or you have no available messages.",
+                })
+                return
+            }
             if (finduser) {
-                const transporter = nodemailer.createTransport({
-                    host: 'smtp.gmail.com',
-                    service: "gmail",
-                    port: 443,
-                    secure: false,
-                    auth: {
-                        user: 'rushilkohli.expinator@gmail.com',
-                        pass: 'atpaxanpbsbzksou'
-                    },
-                    tls: { rejectUnauthorized: false },
-                    debug: true
-                });
+                // const transporter = nodemailer.createTransport({
+                //     host: 'smtp.gmail.com',
+                //     service: "gmail",
+                //     port: 443,
+                //     secure: false,
+                //     auth: {
+                //         user: 'rushilkohli.expinator@gmail.com',
+                //         pass: 'atpaxanpbsbzksou'
+                //     },
+                //     tls: { rejectUnauthorized: false },
+                //     debug: true
+                // });
 
-                // send email
-                await transporter.sendMail({
-                    from: 'rushilkohli.expinator@gmail.com',
-                    to: finduser.email,
-                    subject: 'Otp Plates Canada',
-                    text: 'Message sent by' + finduser.name + ' - ' + mailMessage
-                });
+                // // send email
+                // await transporter.sendMail({
+                //     from: req.body.email,
+                //     to: 'abhisheksaklaniexpinator1@gmail.com',
+                //     subject: 'New Plate Message',
+                //     text: 'Message sent by' + finduser.name + ' - ' + mailMessage
+                // });
                 let createMessage = new messageModel({
-                    sendby: req.body.sendby,
-                    sendto: req.body.sendto,
-                    message: message,
+                    sendby: req.body.email,
+                    sendto: 'abhisheksaklaniexpinator1@gmail.com',
+                    message: mailMessage,
                 })
                 let messagedetail = await createMessage.save()
                 res.json({
                     status: true,
-                    message: "Message send successfully",
+                    message: "Message Sent!",
                     email: messagedetail
                 })
             } else (

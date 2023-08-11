@@ -16,5 +16,6 @@ router.post('/verifyOtp', userController.verifyOtp)
 router.post('/changePassword', userController.changePassword)
 router.post('/verifyuser', userController.verifyuser)
 router.delete("/deleteuser/:id", userController.deleteuser)
+router.post("/sendMail", userController.sendMail)
 
 module.exports = router;

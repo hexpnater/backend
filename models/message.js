@@ -2,11 +2,11 @@ const { Schema, model, default: mongoose  } = require("mongoose");
 
 const chatSchema = new Schema({
     sendby: {
-        type: mongoose.Schema.Types.ObjectId, ref: "user",
+        type: String,
         required: [true, 'sendby id Required'],
     },
     sendto: {
-        type: mongoose.Schema.Types.ObjectId, ref: "user",
+        type: String,
         required: [true, 'sendto id Required'],
     },
     message: {
