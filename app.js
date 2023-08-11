@@ -12,6 +12,10 @@ const path = require("path");
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 var app = express();
+const http = require('http');
+const socketIO = require('socket.io');
+const server = http.createServer(app);
+const io = socketIO(server);
 app.use(cors())
 // // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -52,6 +56,8 @@ app.use(function (req, res, next) {
 
 const connectDb = require("./config/db.js");
 connectDb();
+const connectSocket = require("./socket");
+connectSocket(io);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -68,7 +74,7 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-app.listen(PORT, function (err) {
+server.listen(PORT, function (err) {
   if (err) console.log("Error in server setup")
   console.log("Server listening on Port", PORT);
 }),

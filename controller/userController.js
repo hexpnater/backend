@@ -7,19 +7,20 @@ const path = require('path')
 const secretKey = 'platescanada';
 const nodemailer = require('nodemailer');
 const { Validator } = require('node-input-validator');
-const helpers = require('../helper/helpers') 
+const helpers = require('../helper/helpers')
+const messageModel = require('../models/message')
 module.exports = {
     signupuser: async (req, res) => {
         try {
             var v = new Validator(
-                req.body,{
-                    email:"required|email",
-                    phone:"required",
-                    password:"required",
-                }
+                req.body, {
+                email: "required|email",
+                phone: "required",
+                password: "required",
+            }
             )
             let erroResponse = await helpers.checkValidation(v);
-            if(erroResponse){
+            if (erroResponse) {
                 res.json({
                     status: false,
                     message: erroResponse,
@@ -132,7 +133,7 @@ module.exports = {
     },
     userlist: async (req, res) => {
         try {
-            let users = await usersModel.find({role: { $eq: "user" }});
+            let users = await usersModel.find({ role: { $eq: "user" } });
             res.json({
                 status: true,
                 message: "User list",
@@ -176,7 +177,54 @@ module.exports = {
                 res.json({
                     status: true,
                     message: "Otp send successfully",
-                    email:finduser.email
+                    email: finduser.email
+                })
+            } else (
+                res.json({
+                    status: false,
+                    message: "Email is wrong",
+                })
+            )
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    sendMail: async (req, res) => {
+        try {
+            const email = req.body.email
+            const mailMessage = req.body.message
+            const finduser = await usersModel.findOne({ email: { $eq: req.body.email } });
+            if (finduser) {
+                const transporter = nodemailer.createTransport({
+                    host: 'smtp.gmail.com',
+                    service: "gmail",
+                    port: 443,
+                    secure: false,
+                    auth: {
+                        user: 'rushilkohli.expinator@gmail.com',
+                        pass: 'atpaxanpbsbzksou'
+                    },
+                    tls: { rejectUnauthorized: false },
+                    debug: true
+                });
+
+                // send email
+                await transporter.sendMail({
+                    from: 'rushilkohli.expinator@gmail.com',
+                    to: finduser.email,
+                    subject: 'Otp Plates Canada',
+                    text: 'Message sent by' + finduser.name + ' - ' + mailMessage
+                });
+                let createMessage = new messageModel({
+                    sendby: req.body.sendby,
+                    sendto: req.body.sendto,
+                    message: message,
+                })
+                let messagedetail = await createMessage.save()
+                res.json({
+                    status: true,
+                    message: "Message send successfully",
+                    email: messagedetail
                 })
             } else (
                 res.json({
@@ -200,7 +248,7 @@ module.exports = {
                     res.json({
                         status: true,
                         message: "Otp verified successfully",
-                        email:finduser.email
+                        email: finduser.email
                     })
                 } else {
                     res.json({
