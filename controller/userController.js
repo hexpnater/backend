@@ -215,7 +215,7 @@ module.exports = {
         try {
             var image = req.files.image.name
             const file = req.files.image;
-            const paths = path.join(__dirname, '../') + "/public/images/users" + image;
+            const paths = path.join(__dirname, '../') + "/public/images/users/" + image;
 
             file.mv(paths, (err) => {
                 if (err) {
@@ -241,26 +241,6 @@ module.exports = {
                     })
                     return
                 }
-                // const transporter = nodemailer.createTransport({
-                //     host: 'smtp.gmail.com',
-                //     service: "gmail",
-                //     port: 443,
-                //     secure: false,
-                //     auth: {
-                //         user: 'rushilkohli.expinator@gmail.com',
-                //         pass: 'atpaxanpbsbzksou'
-                //     },
-                //     tls: { rejectUnauthorized: false },
-                //     debug: true
-                // });
-
-                // // send email
-                // await transporter.sendMail({
-                //     from: req.body.email,
-                //     to: 'abhisheksaklaniexpinator1@gmail.com',
-                //     subject: 'New Plate Message',
-                //     text: 'Message sent by' + finduser.name + ' - ' + mailMessage
-                // });
                 let createMessage = new messageModel({
                     sendby: req.body.email,
                     sendto: 'abhisheksaklaniexpinator1@gmail.com',
@@ -275,6 +255,74 @@ module.exports = {
                     finduser.messageAvailaibility = false;
                     await finduser.save()
                 }
+                let htmls = `<header>
+<h1 style="font-size: 18px;">New Plates Message</h1>
+ </header>
+ <style>
+     .mailtb tr {
+         display: flex;
+         margin-bottom: 15px;
+     }
+ 
+     .mailtb tr td {
+         margin: 0px 5px;
+         font-size: 14px;
+     }
+ 
+     img.custom-img {
+         width: 100%;
+         max-width: 200px;
+         height: 200px;
+         object-fit: cover;
+     }
+ </style>
+ 
+ </html>
+ 
+ <body>
+         <table>
+             <tbody style="font-size: 22px" class="mailtb">
+             <tr>
+             <td>From:</td>
+             <td>${req.body.email}</td>
+         </tr>
+         <tr>
+             <td>Plate No:</td>
+             <td>${req.body.plateno}</td>
+         </tr>
+         <tr>
+             <td>Province:</td>
+             <td>${req.body.province}</td>
+         </tr>
+         <tr>
+             <td>Message:</td>
+             <td>${req.body.mailMessage}</td>
+         </tr>
+             </tbody>
+         </table>
+         <img class="custom-img" src="https://backend-plate-canada.onrender.com/images/users/flower.jpg" alt="Girl in a jacket" width="100"
+             height="120">
+ </body>`
+                const transporter = nodemailer.createTransport({
+                    host: 'smtp.gmail.com',
+                    service: "gmail",
+                    port: 443,
+                    secure: false,
+                    auth: {
+                        user: 'rushilkohli.expinator@gmail.com',
+                        pass: 'atpaxanpbsbzksou'
+                    },
+                    tls: { rejectUnauthorized: false },
+                    debug: true
+                });
+
+                // send email
+                await transporter.sendMail({
+                    from: req.body.email,
+                    to: 'abhisheksaklaniexpinator1@gmail.com',
+                    subject: 'New Plate Message',
+                    html: htmlmail
+                });
                 res.json({
                     status: true,
                     message: "Message Sent!",
