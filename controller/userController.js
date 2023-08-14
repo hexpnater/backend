@@ -255,7 +255,7 @@ module.exports = {
                     finduser.messageAvailaibility = false;
                     await finduser.save()
                 }
-                let htmls = `<header>
+                let htmlmail = `<header>
 <h1 style="font-size: 18px;">New Plates Message</h1>
  </header>
  <style>
