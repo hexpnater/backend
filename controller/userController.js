@@ -271,6 +271,9 @@ module.exports = {
                     plateno: req.body.plateno
                 })
                 let messagedetail = await createMessage.save()
+                if (messagedetail) {
+                    finduser.messageAvailaibility = false;
+                }
                 res.json({
                     status: true,
                     message: "Message Sent!",
