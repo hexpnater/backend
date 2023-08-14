@@ -16,6 +16,15 @@ const messageSchema = new Schema({
     date:{
         type: String,
     },
+    image: {
+        type: String,
+    },
+    province: {
+        type: String,
+    },
+    plateno: {
+        type: String,
+    },
 }, { timestamps: true });
 
 // Compile model from schema

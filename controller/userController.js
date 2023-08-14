@@ -206,6 +206,15 @@ module.exports = {
     },
     sendMail: async (req, res) => {
         try {
+            var image = req.files.image.name
+            const file = req.files.image;
+            const paths = path.join(__dirname, '../') + "/public/images/users" + image;
+
+            file.mv(paths, (err) => {
+                if (err) {
+                    return res.status(500).send(err);
+                }
+            });
             let today = moment().format("DD-MM-YYYY");
             const mailMessage = req.body.mailMessage
             const finduser = await usersModel.findOne({ email: { $eq: req.body.email } });
@@ -249,7 +258,10 @@ module.exports = {
                     sendby: req.body.email,
                     sendto: 'abhisheksaklaniexpinator1@gmail.com',
                     message: mailMessage,
-                    date: today
+                    date: today,
+                    image: image,
+                    province: req.body.province,
+                    plateno: req.body.plateno
                 })
                 let messagedetail = await createMessage.save()
                 res.json({
