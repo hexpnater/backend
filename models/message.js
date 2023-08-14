@@ -1,6 +1,6 @@
 const { Schema, model, default: mongoose  } = require("mongoose");
 
-const chatSchema = new Schema({
+const messageSchema = new Schema({
     sendby: {
         type: String,
         required: [true, 'sendby id Required'],
@@ -13,7 +13,10 @@ const chatSchema = new Schema({
         type: String,
         required: [true, 'Message is Required'],
     },
+    date:{
+        type: String,
+    },
 }, { timestamps: true });
 
 // Compile model from schema
-module.exports = chatModel = model("chat", chatSchema);
+module.exports = messageModel = model("message", messageSchema);

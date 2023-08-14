@@ -8,7 +8,9 @@ const secretKey = 'platescanada';
 const nodemailer = require('nodemailer');
 const { Validator } = require('node-input-validator');
 const helpers = require('../helper/helpers')
-const messageModel = require('../models/message')
+const messageModel = require('../models/message');
+const { log } = require('console');
+const moment = require('moment');
 module.exports = {
     signupuser: async (req, res) => {
         try {
@@ -204,6 +206,7 @@ module.exports = {
     },
     sendMail: async (req, res) => {
         try {
+            let today = moment().format("DD-MM-YYYY");
             const mailMessage = req.body.mailMessage
             const finduser = await usersModel.findOne({ email: { $eq: req.body.email } });
             if (finduser && finduser.isverify == false) {
@@ -214,6 +217,14 @@ module.exports = {
                 return
             }
             if (finduser) {
+                let getMessage = await messageModel.findOne({ sendby: finduser.email, date: today })
+                if (getMessage) {
+                    res.json({
+                        status: false,
+                        message: "You already send a message today",
+                    })
+                    return
+                }
                 // const transporter = nodemailer.createTransport({
                 //     host: 'smtp.gmail.com',
                 //     service: "gmail",
@@ -238,6 +249,7 @@ module.exports = {
                     sendby: req.body.email,
                     sendto: 'abhisheksaklaniexpinator1@gmail.com',
                     message: mailMessage,
+                    date: today
                 })
                 let messagedetail = await createMessage.save()
                 res.json({
