@@ -273,6 +273,7 @@ module.exports = {
                 let messagedetail = await createMessage.save()
                 if (messagedetail) {
                     finduser.messageAvailaibility = false;
+                    await finduser.save()
                 }
                 res.json({
                     status: true,
