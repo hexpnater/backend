@@ -11,6 +11,7 @@ const helpers = require('../helper/helpers')
 const messageModel = require('../models/message');
 const { log } = require('console');
 const moment = require('moment');
+const contactModel = require('../models/contact')
 module.exports = {
     signupuser: async (req, res) => {
         try {
@@ -213,127 +214,129 @@ module.exports = {
     },
     sendMail: async (req, res) => {
         try {
-            var image = req.files.image.name
-            const file = req.files.image;
-            const paths = path.join(__dirname, '../') + "/public/images/users/" + image;
+            let getuser = await usersModel.findOne({ plateno: { $eq: req.body.plateno }, plateprovince: { $eq: req.body.province } });
+            if (getuser && getuser.isverify == true) {
+                let userEmail = getuser.email;
+                var image = req.files.image.name
+                const file = req.files.image;
+                const paths = path.join(__dirname, '../') + "/public/images/users/" + image;
 
-            file.mv(paths, (err) => {
-                if (err) {
-                    return res.status(500).send(err);
-                }
-            });
-            let today = moment().format("DD-MM-YYYY");
-            const mailMessage = req.body.mailMessage
-            const finduser = await usersModel.findOne({ email: { $eq: req.body.email } });
-            if (finduser && finduser.isverify == false) {
-                res.json({
-                    status: false,
-                    message: "Message cannot be sent Your account must be verified first or you have no available messages.",
-                })
-                return
-            }
-            if (finduser) {
-                let getMessage = await messageModel.findOne({ sendby: finduser.email, date: today })
-                if (getMessage) {
+                file.mv(paths, (err) => {
+                    if (err) {
+                        return res.status(500).send(err);
+                    }
+                });
+                let today = moment().format("DD-MM-YYYY");
+                const mailMessage = req.body.mailMessage
+                const finduser = await usersModel.findOne({ email: { $eq: req.body.email } });
+                if (finduser && finduser.isverify == false) {
                     res.json({
                         status: false,
-                        message: "You already send a message today",
+                        message: "Message cannot be sent Your account must be verified first or you have no available messages.",
                     })
                     return
                 }
-                let createMessage = new messageModel({
-                    sendby: req.body.email,
-                    sendto: 'rajni@mailinator.com',
-                    message: mailMessage,
-                    date: today,
-                    image: image,
-                    province: req.body.province,
-                    plateno: req.body.plateno
-                })
-                let messagedetail = await createMessage.save()
-                if (messagedetail) {
-                    finduser.messageAvailaibility = false;
-                    await finduser.save()
-                }
-                let htmlmail = `<header>
-<h1 style="font-size: 18px;">New Plates Message</h1>
- </header>
- <style>
-     .mailtb tr {
-         display: flex;
-         margin-bottom: 15px;
-     }
- 
-     .mailtb tr td {
-         margin: 0px 5px;
-         font-size: 14px;
-     }
- 
-     img.custom-img {
-         width: 100%;
-         max-width: 200px;
-         height: 200px;
-         object-fit: cover;
-     }
- </style>
- 
- </html>
- 
- <body>
-         <table>
-             <tbody style="font-size: 22px" class="mailtb">
+                if (finduser) {
+                    let getMessage = await messageModel.findOne({ sendby: finduser.email, date: today })
+                    if (getMessage) {
+                        res.json({
+                            status: false,
+                            message: "You already send a message today",
+                        })
+                        return
+                    }
+                    let createMessage = new messageModel({
+                        sendby: req.body.email,
+                        sendto: userEmail,
+                        message: mailMessage,
+                        date: today,
+                        image: image,
+                        province: req.body.province,
+                        plateno: req.body.plateno
+                    })
+                    let messagedetail = await createMessage.save()
+                    if (messagedetail) {
+                        finduser.messageAvailaibility = false;
+                        await finduser.save()
+                    }
+                    let htmlmail = `<header>
+    <h1 style="font-size: 18px;">New Plates Message</h1>
+     </header>
+     <style>
+         .mailtb tr {
+             display: flex;
+             margin-bottom: 15px;
+         }
+     
+         .mailtb tr td {
+             margin: 0px 5px;
+             font-size: 14px;
+         }
+     
+         img.custom-img {
+             width: 100%;
+             max-width: 200px;
+             height: 200px;
+             object-fit: cover;
+         }
+     </style>
+     
+     </html>
+     
+     <body>
+             <table>
+                 <tbody style="font-size: 22px" class="mailtb"> 
+                 <tr>
+                 <td>From:</td>
+                 <td>${req.body.email}</td>
+             </tr>             
              <tr>
-             <td>From:</td>
-             <td>${req.body.email}</td>
-         </tr>
-         <tr>
-             <td>Plate No:</td>
-             <td>${req.body.plateno}</td>
-         </tr>
-         <tr>
-             <td>Province:</td>
-             <td>${req.body.province}</td>
-         </tr>
-         <tr>
-             <td>Message:</td>
-             <td>${req.body.mailMessage}</td>
-         </tr>
-             </tbody>
-         </table>
-         <img class="custom-img" src="https://backend-plate-canada.onrender.com/images/users/${image}" alt="Girl in a jacket" width="100"
-             height="120">
- </body>`
-                const transporter = nodemailer.createTransport({
-                    host: 'smtp.gmail.com',
-                    service: "gmail",
-                    port: 443,
-                    secure: false,
-                    auth: {
-                        user: 'testexpinator@gmail.com',
-                        pass: 'qylehejecauwqcpw'
-                    },
-                    tls: { rejectUnauthorized: false },
-                    debug: true
-                });
+                 <td>Message:</td>
+                 <td>${req.body.mailMessage}</td>
+             </tr>
+                 </tbody>
+             </table>
+             <img class="custom-img" src="https://backend-plate-canada.onrender.com/images/users/${image}" alt="Girl in a jacket" width="100"
+                 height="120">
+     </body>`
+                    const transporter = nodemailer.createTransport({
+                        host: 'smtp.gmail.com',
+                        service: "gmail",
+                        port: 443,
+                        secure: false,
+                        auth: {
+                            user: 'testexpinator@gmail.com',
+                            pass: 'qylehejecauwqcpw'
+                        },
+                        tls: { rejectUnauthorized: false },
+                        debug: true
+                    });
 
-                // send email
-                await transporter.sendMail({
-                    from: req.body.email,
-                    to: 'rajni@mailinator.com',
-                    subject: 'New Plate Message',
-                    html: htmlmail
-                });
-                res.json({
-                    status: true,
-                    message: "Message Sent!",
-                    email: messagedetail
-                })
-            } else (
+                    // send email
+                    await transporter.sendMail({
+                        from: req.body.email,
+                        to: userEmail,
+                        subject: 'New Plate Message',
+                        html: htmlmail
+                    });
+                    res.json({
+                        status: true,
+                        message: "Message Sent!",
+                        email: messagedetail
+                    })
+                } else (
+                    res.json({
+                        status: false,
+                        message: "Email is wrong",
+                    })
+                )
+            } else {
                 res.json({
                     status: false,
-                    message: "Email is wrong",
+                    message: "User not found",
                 })
-            )
+            }
+
         } catch (error) {
             console.log(error);
         }
@@ -453,5 +456,24 @@ module.exports = {
             console.log(error);
         }
     },
+    contactUs: async (req, res) => {
+        try {
+            let createMsg = new contactModel({
+                name: req.body.name,
+                email: req.body.email,
+                subject: req.body.subject,
+                message: req.body.message,
+            })
+            let createdMsg = await createMsg.save()
+            res.json({
+                status: true,
+                message: "Data send Successfully",
+                detail: createdMsg
+            })
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
 }
