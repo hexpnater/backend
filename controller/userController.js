@@ -300,7 +300,7 @@ module.exports = {
          </tr>
              </tbody>
          </table>
-         <img class="custom-img" src="https://backend-plate-canada.onrender.com/images/users/flower.jpg" alt="Girl in a jacket" width="100"
+         <img class="custom-img" src="https://backend-plate-canada.onrender.com/images/users/${image}" alt="Girl in a jacket" width="100"
              height="120">
  </body>`
                 const transporter = nodemailer.createTransport({
