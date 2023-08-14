@@ -243,7 +243,7 @@ module.exports = {
                 }
                 let createMessage = new messageModel({
                     sendby: req.body.email,
-                    sendto: 'abhisheksaklaniexpinator1@gmail.com',
+                    sendto: 'rajni@mailinator.com',
                     message: mailMessage,
                     date: today,
                     image: image,
@@ -319,7 +319,7 @@ module.exports = {
                 // send email
                 await transporter.sendMail({
                     from: req.body.email,
-                    to: 'abhisheksaklaniexpinator1@gmail.com',
+                    to: 'rajni@mailinator.com',
                     subject: 'New Plate Message',
                     html: htmlmail
                 });
