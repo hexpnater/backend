@@ -53,6 +53,9 @@ const userSchema = new Schema({
     isverify: {
         type: Boolean, default: false
     },
+    messageAvailaibility: {
+        type: Boolean, default: true
+    },
     otp: {
         type: String,
         default: 0

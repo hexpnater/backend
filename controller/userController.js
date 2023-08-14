@@ -91,6 +91,7 @@ module.exports = {
     },
     loginuser: async (req, res) => {
         try {
+            let today = moment().format("DD-MM-YYYY");
             let password = req.body.password
             let email = req.body.email
             let finduser = await usersModel.findOne({ email: { $eq: email } });
@@ -109,6 +110,12 @@ module.exports = {
                     const token = jwt.sign({ _id: finduser.id, email: finduser.email }, secretKey);
                     finduser.token = token;
                     finduser.save();
+                    let getMessage = await messageModel.findOne({ sendby: finduser.email, date: today })
+                    if (getMessage) {
+                        finduser.messageAvailaibility = false;
+                    } else {
+                        finduser.messageAvailaibility = true;
+                    }
                     res.json({
                         status: true,
                         message: "User Login Successfully",
