@@ -303,26 +303,26 @@ module.exports = {
          <img class="custom-img" src="https://backend-plate-canada.onrender.com/images/users/flower.jpg" alt="Girl in a jacket" width="100"
              height="120">
  </body>`
-                const transporter = nodemailer.createTransport({
-                    host: 'smtp.gmail.com',
-                    service: "gmail",
-                    port: 443,
-                    secure: false,
-                    auth: {
-                        user: 'rushilkohli.expinator@gmail.com',
-                        pass: 'atpaxanpbsbzksou'
-                    },
-                    tls: { rejectUnauthorized: false },
-                    debug: true
-                });
+                // const transporter = nodemailer.createTransport({
+                //     host: 'smtp.gmail.com',
+                //     service: "gmail",
+                //     port: 443,
+                //     secure: false,
+                //     auth: {
+                //         user: 'rushilkohli.expinator@gmail.com',
+                //         pass: 'atpaxanpbsbzksou'
+                //     },
+                //     tls: { rejectUnauthorized: false },
+                //     debug: true
+                // });
 
                 // send email
-                await transporter.sendMail({
-                    from: req.body.email,
-                    to: 'rajni@mailinator.com',
-                    subject: 'New Plate Message',
-                    html: htmlmail
-                });
+                // await transporter.sendMail({
+                //     from: req.body.email,
+                //     to: 'rajni@mailinator.com',
+                //     subject: 'New Plate Message',
+                //     html: htmlmail
+                // });
                 res.json({
                     status: true,
                     message: "Message Sent!",
