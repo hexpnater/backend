@@ -59,6 +59,14 @@ module.exports = {
                 })
                 return
             }
+            const finduserplate = await usersModel.findOne({ plateno: req.body.plateno });
+            if (finduserplate) {
+                res.json({
+                    status: false,
+                    message: "User aleady exist with this number plate",
+                })
+                return
+            }
             if (req.body.password != req.body.confirmpassword) {
                 res.json({
                     status: false,
