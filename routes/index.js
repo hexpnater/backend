@@ -7,18 +7,21 @@ const checkAuth = require("../helper/checkAuth");
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' });
 });
+// admin
+router.post('/loginAdmin', userController.loginAdmin)
+router.post('/verifyuser', userController.verifyuser)
+router.delete("/deleteuser/:id", userController.deleteuser)
+router.get("/getContactUs", userController.getContactUs)
+router.delete("/deleteContactUs/:id", userController.deleteContactUs)
+// user
 router.post('/signupuser', userController.signupuser)
 router.post('/loginuser', userController.loginuser)
-router.post('/loginAdmin', userController.loginAdmin)
 router.get('/userlist', userController.userlist)
+router.post("/sendMail", userController.sendMail)
+router.post("/contactUs", userController.contactUs)
+//user password
 router.post('/sendOtp', userController.sendOtp)
 router.post('/verifyOtp', userController.verifyOtp)
 router.post('/changePassword', userController.changePassword)
-router.post('/verifyuser', userController.verifyuser)
-router.delete("/deleteuser/:id", userController.deleteuser)
-router.post("/sendMail", userController.sendMail)
-router.post("/contactUs", userController.contactUs)
-router.get("/getContactUs", userController.getContactUs)
-router.delete("/deleteContactUs/:id", userController.deleteContactUs)
 
 module.exports = router;
