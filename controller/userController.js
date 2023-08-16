@@ -474,6 +474,36 @@ module.exports = {
         } catch (error) {
             console.log(error);
         }
-    }
+    },
+    getContactUs: async (req, res) => {
+        try {
+            let allMessages = await contactModel.find({});
+            res.json({
+                status: true,
+                message: "Contact us listing",
+                detail: allMessages
+            })
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    deleteContactUs: async (req, res) => {
+        try {
+            let deleteData = await contactModel.deleteOne({ _id: req.params.id });
+            if (deleteData) {
+                res.json({
+                    status: true,
+                    message: "Data deleted successfully",
+                })
+            } else {
+                res.json({
+                    status: false,
+                    message: "Data not deleted",
+                })
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    },
 
 }

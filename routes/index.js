@@ -18,5 +18,7 @@ router.post('/verifyuser', userController.verifyuser)
 router.delete("/deleteuser/:id", userController.deleteuser)
 router.post("/sendMail", userController.sendMail)
 router.post("/contactUs", userController.contactUs)
+router.get("/getContactUs", userController.getContactUs)
+router.delete("/deleteContactUs/:id", userController.deleteContactUs)
 
 module.exports = router;
