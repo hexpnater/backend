@@ -50,6 +50,9 @@ const userSchema = new Schema({
     token: {
         type: String,
     },
+    isEmailVerify: {
+        type: Boolean, default: false
+    },
     isverify: {
         type: Boolean, default: false
     },

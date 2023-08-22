@@ -23,5 +23,6 @@ router.post("/contactUs", userController.contactUs)
 router.post('/sendOtp', userController.sendOtp)
 router.post('/verifyOtp', userController.verifyOtp)
 router.post('/changePassword', userController.changePassword)
+router.get('/verifysignupmail', userController.verifysignupmail)
 
 module.exports = router;

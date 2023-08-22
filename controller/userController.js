@@ -86,6 +86,60 @@ module.exports = {
                 image: image,
             })
             let user = await createUser.save()
+            let htmlmail = `<header>
+            <h1 style="font-size: 18px;">New Plates Email Verification</h1>
+             </header>
+             <style>
+                 .mailtb tr {
+                     display: flex;
+                     margin-bottom: 15px;
+                 }
+             
+                 .mailtb tr td {
+                     margin: 0px 5px;
+                     font-size: 14px;
+                 }
+             
+                 img.custom-img {
+                     width: 100%;
+                     max-width: 200px;
+                     height: 200px;
+                     object-fit: cover;
+                 }
+             </style>
+             
+             </html>
+             
+             <body>
+                     <table>
+                         <tbody style="font-size: 22px" class="mailtb"> 
+                         <tr>
+                         <td>Verify your email for create account in plates Canada</td>
+                     </tr>             
+                         </tbody>
+                     </table>
+                     <a href="http://localhost:3200/verifysignupmail?email=${user.email}"><button type="button" >Verify Email</button></a>
+             </body>`
+            const transporter = nodemailer.createTransport({
+                host: 'smtp.gmail.com',
+                service: "gmail",
+                port: 443,
+                secure: false,
+                auth: {
+                    user: 'testexpinator@gmail.com',
+                    pass: 'qylehejecauwqcpw'
+                },
+                tls: { rejectUnauthorized: false },
+                debug: true
+            });
+
+            // send email
+            await transporter.sendMail({
+                from: req.body.email,
+                to: user.email,
+                subject: 'New Plate Email verification',
+                html: htmlmail
+            });
             res.json({
                 status: true,
                 message: "User added Successfully",
@@ -151,7 +205,7 @@ module.exports = {
     },
     userlist: async (req, res) => {
         try {
-            let users = await usersModel.find({ role: { $eq: "user" } });
+            let users = await usersModel.find({ role: { $eq: "user" }, isEmailVerify: true });
             res.json({
                 status: true,
                 message: "User list",
@@ -161,6 +215,89 @@ module.exports = {
         } catch (error) {
             console.log(error);
         }
+    },
+    verifysignupmail: async (req, res) => {
+        try {
+            const useremail = req.query.email
+            const finduser = await usersModel.findOne({ email: { $eq: useremail } });
+            if (finduser) {
+                await usersModel.findOneAndUpdate({ email: { $eq: useremail } }, {
+                    $set: {
+                        isEmailVerify: true
+                    }
+                });
+                let htmlmail = `<header>
+                <h1 style="font-size: 18px;">New Plates Email Verified</h1>
+                 </header>
+                 <style>
+                     .mailtb tr {
+                         display: flex;
+                         margin-bottom: 15px;
+                     }
+                 
+                     .mailtb tr td {
+                         margin: 0px 5px;
+                         font-size: 14px;
+                     }
+                 
+                     img.custom-img {
+                         width: 100%;
+                         max-width: 200px;
+                         height: 200px;
+                         object-fit: cover;
+                     }
+                 </style>
+                 
+                 </html>
+                 
+                 <body>
+                         <table>
+                             <tbody style="font-size: 22px" class="mailtb"> 
+                             <tr>
+                             <td>Your email is verifed Successfully.Please note that the registration
+                             process may take up to 24 hours to complete. During this time, our team will carefully verify your
+                             information and ownership documents to ensure a secure and trustworthy community. We appreciate
+                             your patience and look forward to welcoming you as an active user on Plates Canada soon! If you have
+                             any urgent concerns or questions, feel free to reach out to our support team at
+                             info@platescanada.com.</td>
+                         </tr>             
+                             </tbody>
+                         </table>
+                 </body>`
+                const transporter = nodemailer.createTransport({
+                    host: 'smtp.gmail.com',
+                    service: "gmail",
+                    port: 443,
+                    secure: false,
+                    auth: {
+                        user: 'testexpinator@gmail.com',
+                        pass: 'qylehejecauwqcpw'
+                    },
+                    tls: { rejectUnauthorized: false },
+                    debug: true
+                });
+
+                // send email
+                await transporter.sendMail({
+                    from: "info@platescanada.com",
+                    to: finduser.email,
+                    subject: 'New Plate Email verified',
+                    html: htmlmail
+                });
+                res.json({
+                    status: true,
+                    message: "Email verified Sucessfully",
+                })
+            } else {
+                res.json({
+                    status: true,
+                    message: "Email not verified",
+                })
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
     },
     sendOtp: async (req, res) => {
         try {
@@ -293,11 +430,7 @@ module.exports = {
      
      <body>
              <table>
-                 <tbody style="font-size: 22px" class="mailtb"> 
-                 <tr>
-                 <td>From:</td>
-                 <td>${req.body.email}</td>
-             </tr>             
+                 <tbody style="font-size: 22px" class="mailtb">           
              <tr>
                  <td>Message:</td>
                  <td>${req.body.mailMessage}</td>
@@ -415,6 +548,59 @@ module.exports = {
             if (finduser) {
                 finduser.isverify = true
                 finduser.save()
+                let htmlmail = `<header>
+                <h1 style="font-size: 18px;">New Plates Account Verified by Admin</h1>
+                 </header>
+                 <style>
+                     .mailtb tr {
+                         display: flex;
+                         margin-bottom: 15px;
+                     }
+                 
+                     .mailtb tr td {
+                         margin: 0px 5px;
+                         font-size: 14px;
+                     }
+                 
+                     img.custom-img {
+                         width: 100%;
+                         max-width: 200px;
+                         height: 200px;
+                         object-fit: cover;
+                     }
+                 </style>
+                 
+                 </html>
+                 
+                 <body>
+                         <table>
+                             <tbody style="font-size: 22px" class="mailtb"> 
+                             <tr>
+                             <td>Your New Plates account has been verified by an Plates Canada.</td>
+                         </tr>             
+                             </tbody>
+                         </table>
+                 </body>`
+                const transporter = nodemailer.createTransport({
+                    host: 'smtp.gmail.com',
+                    service: "gmail",
+                    port: 443,
+                    secure: false,
+                    auth: {
+                        user: 'testexpinator@gmail.com',
+                        pass: 'qylehejecauwqcpw'
+                    },
+                    tls: { rejectUnauthorized: false },
+                    debug: true
+                });
+
+                // send email
+                await transporter.sendMail({
+                    from: "info@platescanada.com",
+                    to: finduser.email,
+                    subject: 'New Plate Email verified',
+                    html: htmlmail
+                });
                 res.json({
                     status: true,
                     message: "User verified successfully",
